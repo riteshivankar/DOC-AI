@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Disease Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+
+  <div class="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-xl border border-gray-200">
+    <h1 class="text-3xl font-bold text-blue-700 text-center mb-6">🩺 Disease Predictor</h1>
+
+    <form id="predictForm" class="space-y-4">
+      <label for="symptoms" class="block font-semibold text-gray-700">Enter Symptoms (comma-separated):</label>
+      <textarea id="symptoms" name="symptoms" rows="4" required
+        class="w-full border border-blue-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+        placeholder="e.g. itching, fatigue, vomiting"></textarea>
+
+      <button type="submit"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200">
+        🔍 Predict Disease
+      </button>
+    </form>
+
+    <div id="result" class="hidden mt-8 space-y-6">
+      <div class="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md shadow-sm">
+        <h2 class="text-xl font-bold text-blue-700">🦠 Disease:</h2>
+        <p id="diseaseName" class="text-gray-800 font-medium mt-1"></p>
+      </div>
+
+      <div class="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md shadow-sm">
+        <h2 class="text-xl font-bold text-blue-700">📋 Description:</h2>
+        <p id="description" class="text-gray-800 mt-1"></p>
+      </div>
+
+      <div class="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md shadow-sm">
+        <h2 class="text-xl font-bold text-blue-700">🛡️ Precautions:</h2>
+        <ul id="precautions" class="list-disc list-inside text-gray-800 mt-1"></ul>
+      </div>
+
+      <div class="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-md shadow-sm">
+        <h2 class="text-xl font-bold text-blue-700">🥗 Recommended Diet:</h2>
+        <ul id="diet" class="list-disc list-inside text-gray-800 mt-1"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('predictForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const symptoms = document.getElementById('symptoms').value;
+
+      const response = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symptoms })
+      });
+
+      const data = await response.json();
+
+      document.getElementById('result').classList.remove('hidden');
+      document.getElementById('diseaseName').textContent = data.disease || 'N/A';
+      document.getElementById('description').textContent = data.description || 'N/A';
+
+      const precautionsEl = document.getElementById('precautions');
+      precautionsEl.innerHTML = "";
+      (data.precautions || []).forEach(p => {
+        precautionsEl.innerHTML += `<li>${p}</li>`;
+      });
+
+      const dietEl = document.getElementById('diet');
+      dietEl.innerHTML = "";
+      (data.diet || []).forEach(d => {
+        dietEl.innerHTML += `<li>${d}</li>`;
+      });
+    });
+  </script>
+</body>
+</html>
+
