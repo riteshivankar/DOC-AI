@@ -1,3 +1,4 @@
+https://doc-ai-tyct.onrender.com
 # 🩺 Disease Predictor App
 
 This Flask web app predicts diseases based on symptoms using a machine learning model. It also provides a description, precautions, and diet recommendations.
